@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מחולל לינקים לוואטסאפ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Rubik:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00A884;
+            --primary-dark: #008069;
+            --secondary: #25D366;
+            --bg-dark: #0B141A;
+            --bg-card: #1F2C34;
+            --text-primary: #E9EDEF;
+            --text-secondary: #8696A0;
+            --accent: #00E676;
+            --shadow: rgba(0, 168, 132, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Heebo', sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #1a2730 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 50%, rgba(37, 211, 102, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 50%, rgba(0, 230, 118, 0.05) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(120deg); }
+            66% { transform: translate(-20px, 20px) rotate(240deg); }
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            box-shadow: 0 8px 24px var(--shadow);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        h1 {
+            font-family: 'Rubik', sans-serif;
+            font-size: 2.5em;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1em;
+            margin-top: 10px;
+            font-weight: 300;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4),
+                        0 0 0 1px rgba(255, 255, 255, 0.05);
+            animation: fadeInUp 0.6s ease-out 0.2s both;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--secondary), var(--accent), var(--secondary));
+            background-size: 200% 100%;
+            animation: shimmer 3s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 12px;
+            font-size: 1em;
+            color: var(--text-primary);
+        }
+
+        .phone-display {
+            background: rgba(37, 211, 102, 0.1);
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-size: 1.2em;
+            font-weight: 600;
+            color: var(--secondary);
+            text-align: center;
+            margin-bottom: 30px;
+            font-family: 'Rubik', monospace;
+            letter-spacing: 1px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            font-family: 'Heebo', sans-serif;
+            font-size: 1em;
+            resize: vertical;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        textarea:focus {
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 4px rgba(37, 211, 102, 0.1);
+            transform: translateY(-2px);
+        }
+
+        textarea::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 18px 32px;
+            border: none;
+            border-radius: 16px;
+            font-family: 'Rubik', sans-serif;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        button:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-generate {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+            color: white;
+            box-shadow: 0 8px 24px var(--shadow);
+        }
+
+        .btn-generate:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px var(--shadow);
+        }
+
+        .btn-generate:active {
+            transform: translateY(-1px);
+        }
+
+        .result-section {
+            margin-top: 30px;
+            padding: 25px;
+            background: rgba(0, 168, 132, 0.05);
+            border: 2px solid var(--primary);
+            border-radius: 16px;
+            display: none;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .result-section.show {
+            display: block;
+        }
+
+        .result-label {
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--secondary);
+            font-size: 0.95em;
+        }
+
+        .result-box {
+            background: var(--bg-dark);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            max-height: 150px;
+            overflow-y: auto;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .result-box::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .result-box::-webkit-scrollbar-track {
+            background: var(--bg-card);
+            border-radius: 4px;
+        }
+
+        .result-box::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        .btn-copy {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            margin-top: 15px;
+            width: 100%;
+        }
+
+        .btn-copy:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--secondary);
+        }
+
+        .btn-copy.copied {
+            background: var(--secondary);
+            border-color: var(--secondary);
+            color: white;
+        }
+
+        .btn-copy:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-copy:disabled:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: none;
+        }
+
+        .success-message {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: var(--secondary);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .success-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .char-count {
+            text-align: left;
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .card {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .success-message {
+                right: 15px;
+                left: 15px;
+                top: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">💬</div>
+            </div>
+            <h1>מחולל לינקים לוואטסאפ</h1>
+            <p class="subtitle">צור לינקים מקודדים עם הודעה מותאמת אישית</p>
+        </div>
+
+        <div class="card">
+            <div class="phone-display">📱 972-50-862-4340</div>
+
+            <div class="form-group">
+                <label for="messageText">✍️ כתוב את ההודעה שלך</label>
+                <textarea 
+                    id="messageText" 
+                    placeholder="לדוגמה: שלום, אני מעוניין במוצר XYZ..."
+                    oninput="updateCharCount()"
+                ></textarea>
+                <div class="char-count" id="charCount">0 תווים</div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-generate" onclick="generateLink()">
+                    🔗 צור לינק
+                </button>
+            </div>
+
+            <div class="result-section" id="resultSection">
+                <div class="result-label">✅ הלינק שלך מוכן!</div>
+                <div class="result-box" id="resultLink"></div>
+                <button class="btn-copy" onclick="copyToClipboard(event, 'resultLink')">
+                    📋 העתק לינק
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="success-message" id="successMessage">
+        ✓ הלינק הועתק ללוח!
+    </div>
+
+    <script>
+        const phoneNumber = '972508624340'; // המספר בפורמט בינלאומי ללא +
+
+        function updateCharCount() {
+            const text = document.getElementById('messageText').value;
+            document.getElementById('charCount').textContent = `${text.length} תווים`;
+        }
+
+        function generateLink() {
+            const messageText = document.getElementById('messageText').value;
+            
+            if (!messageText.trim()) {
+                alert('נא להזין הודעה');
+                return;
+            }
+
+            // קידוד ההודעה לשימוש ב-URL
+            const encodedMessage = encodeURIComponent(messageText);
+            
+            // יצירת לינק וואטסאפ
+            const whatsappLink = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+            
+            // הצגת התוצאה
+            document.getElementById('resultLink').textContent = whatsappLink;
+            document.getElementById('resultSection').classList.add('show');
+            
+            // גלילה לתוצאה
+            document.getElementById('resultSection').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'nearest' 
+            });
+        }
+
+        function copyToClipboard(event, elementId) {
+            const element = document.getElementById(elementId);
+            const linkText = element.textContent.trim();
+            
+            // בדיקה אם יש תוכן להעתיק
+            if (!linkText || linkText.includes('מקצר') || linkText.includes('שגיאה')) {
+                alert('אין לינק להעתקה');
+                return;
+            }
+            
+            // שיטת גיבוי שעובדת בכל הדפדפנים
+            const textArea = document.createElement('textarea');
+            textArea.value = linkText;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-9999px';
+            textArea.style.top = '-9999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    // שינוי מראה הכפתור
+                    const btn = event.target;
+                    const originalText = btn.textContent;
+                    btn.classList.add('copied');
+                    btn.textContent = '✓ הועתק!';
+                    
+                    // הצגת הודעת הצלחה
+                    const successMsg = document.getElementById('successMessage');
+                    successMsg.classList.add('show');
+                    
+                    // איפוס אחרי 2 שניות
+                    setTimeout(() => {
+                        btn.classList.remove('copied');
+                        btn.textContent = originalText;
+                        successMsg.classList.remove('show');
+                    }, 2000);
+                } else {
+                    alert('שגיאה בהעתקה. העתק ידנית את הלינק.');
+                }
+            } catch (err) {
+                alert('שגיאה בהעתקה. העתק ידנית את הלינק.');
+            } finally {
+                document.body.removeChild(textArea);
+            }
+        }
+
+        // אפשרות ליצירת לינק בלחיצה על Enter (עם Shift)
+        document.getElementById('messageText').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.shiftKey) {
+                e.preventDefault();
+                generateLink();
+            }
+        });
+    </script>
+</body>
+</html>
